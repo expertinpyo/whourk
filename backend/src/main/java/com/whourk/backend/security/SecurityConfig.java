@@ -1,24 +1,18 @@
 package com.whourk.backend.security;
 
-import java.util.HashSet;
-import java.util.Set;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.whourk.backend.security.auth.CustomOAuth2UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
-import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final CustomOAuth2UserService customOAuth2UserService;
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -35,8 +29,8 @@ public class SecurityConfig {
                 oauth2Login
                     .loginPage("/login")
                     .defaultSuccessUrl("/dashboard")
-                    .userInfoEndpoint()
-                    .oidcUserService(oidcUserService())
+                    .userInfoEndpoint(userInfoEndpoint-> userInfoEndpoint.userService(
+                        customOAuth2UserService))
             )
             .logout(logout->
                 logout
@@ -46,19 +40,5 @@ public class SecurityConfig {
 
         return http.build();
     }
-    @Bean
-    public OidcUserService oidcUserService() {
-        return (idToken, accessToken, attributes) -> {
-            Set<OidcUserAuthority> authorities = new HashSet<>();
-            authorities.add(new OidcUserAuthority(attributes));
-            return new OidcUser(authorities, idToken, attributes);
-        };
-    }
 
-    @Bean
-    public ClientRegistrationRepository clientRegistrationRepository() {
-        return new InMemoryClientRegistrationRepository(
-            // Define your client registration details here
-        );
-    }
 }

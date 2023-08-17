@@ -422,7 +422,47 @@ Spring boot security configuration 설정이 필요함
 
 
 
-- 
+구현에 있어 만들어야 하는 것들
+
+- Security Config
+  - Spring Security를 구성하는데 사용됨
+  - App의 보안 설정을 정의함
+  - 인증, 인가 관련 설정을 구성함
+  - OAuth2 로그인 설정을 관리해 어떤 역할이 어떤 권한을 가지며, 어떤 리소스에 접근할 수 있는지를 정의함
+  - 이 곳에 filterChain 정의함으로써 위에 언급한 활동들을 할 수 있다.
+    - authorizeRequests()
+      - 특정 IRL 패턴에 대한 접근 권한을 설정함
+      - 누가 어떤 URL에 접근할 수 있는지 정의
+      - permitAll()  / hasRole() / hasAuthority 등을 사용해 접근 권한 설정함
+    - formLogin()
+      - 폼 기반 로그인 설정 수행
+      - 로그인 페이지 url / 로그인 성공, 실패 시 동작 설정 가능
+    - httpBasic()
+      - HTTP Basic 인증 설정
+      - 클라이언트가 인증 헤더를 제공해 인증하는 방식
+    - csrf()
+      - CSRF 보호 설정 수행
+    - logout()
+      - 로그아웃 URL, 로그아웃 성공 시의 동작 등을 설정할 수 있음
+    - exceptionHandling()
+      - 예외 처리 관련 설정 수행
+    - addFilterBefore() / addFilterAfter()
+      - 커스텀 필터 등록해 필터 체인에 추가할 수 있음
+    - oauth2Login()
+      - OAuth2 로그인 설정 수행
+- OAuth2Service
+  - OAuth2 인증 프로세스 관리
+  - OAuth2 토큰을 가져오는 등의 작업 수행
+  - OAuth2 로그인 시 필요한 Access Token을 얻어오고, 이를 통해 사용자 정보 가져올 때 주로 사용
+- OAuth2Attribute
+  - OAuth2로부터 가져온 사용자 정보 맵핑 or 가공하는 역할
+  - 일종의 DTO 느낌
+  - OAuth2는 일반적으로 JSON 형식으로 사용자 정보 제공함
+  - OAuth2 인증 서버로 부터 받은 사용자 정보를 앱의 사용자 정보 객체로 변환하거나, 사용자 이름, 이메일 등 특정 정보만 추출해 제공하는 역할  
+
+
+
+
 
 
 
